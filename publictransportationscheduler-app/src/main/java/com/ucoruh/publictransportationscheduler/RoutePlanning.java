@@ -1,74 +1,119 @@
 package com.ucoruh.publictransportationscheduler;
 
-import java.util.*;
+import com.ucoruh.publictransportationscheduler.datastructures.GraphSearch;
+
+import java.io.*;
+import java.util.Scanner;
 
 public class RoutePlanning {
-  private Map<String, List<String>> graph = new HashMap<>();
+  private static final String NODES_FILE = "route_nodes.bin"; // Düğümler dosyası
+  private static final String EDGES_FILE = "route_edges.bin"; // Kenarlar dosyası
+
+  private GraphSearch graphSearch = new GraphSearch(); // Graf bağlantıları için
+
+  public RoutePlanning() {
+    loadGraph(); // Başlangıçta düğümleri ve bağlantıları yükler
+  }
 
   public void display(Scanner scanner) {
     int choice;
 
     do {
+      ConsoleUtils.clearConsole();
       System.out.println("=== Route Planning ===");
-      System.out.println("1. Add Route");
-      System.out.println("2. Get Route Suggestions");
-      System.out.println("3. Back to Main Menu");
+      System.out.println("1. Add Starting Point");
+      System.out.println("2. Add Ending Point");
+      System.out.println("3. View Suggested Routes (BFS)");
+      System.out.println("4. Explore Alternative Routes (DFS)");
+      System.out.println("5. Save and Exit");
       System.out.print("Enter your choice: ");
       choice = scanner.nextInt();
       scanner.nextLine();
 
       switch (choice) {
         case 1:
-          addRoute(scanner);
+          addNode(scanner, "Starting");
           break;
 
         case 2:
-          getRouteSuggestions(scanner);
+          addNode(scanner, "Ending");
           break;
 
         case 3:
-          System.out.println("Returning to Main Menu...");
+          viewSuggestedRoutes(scanner);
+          break;
+
+        case 4:
+          exploreAlternativeRoutes(scanner);
+          break;
+
+        case 5:
+          saveGraph();
+          System.out.println("Graph data saved. Returning to Main Menu...");
           break;
 
         default:
-          System.out.println("Invalid choice. Try again.");
+          System.out.println("Invalid choice. Please try again.");
       }
-    } while (choice != 3);
+    } while (choice != 5);
   }
 
-  private void addRoute(Scanner scanner) {
-    System.out.print("Enter starting point: ");
-    String start = scanner.nextLine();
-    System.out.print("Enter destination: ");
-    String end = scanner.nextLine();
-    graph.putIfAbsent(start, new ArrayList<>());
-    graph.get(start).add(end);
-    System.out.println("Route added: " + start + " -> " + end);
+  private void addNode(Scanner scanner, String type) {
+    System.out.print("Enter " + type + " Point: ");
+    String node = scanner.nextLine();
+    graphSearch.addNode(node);
+
+    if (type.equals("Ending")) {
+      System.out.print("Enter starting point to connect: ");
+      String startPoint = scanner.nextLine();
+      graphSearch.addEdge(startPoint, node);
+      System.out.println("Connection added: " + startPoint + " -> " + node);
+    }
+
+    System.out.println(type + " Point Added: " + node);
   }
 
-  private void getRouteSuggestions(Scanner scanner) {
-    System.out.print("Enter starting point: ");
-    String start = scanner.nextLine();
-    System.out.println("Routes from " + start + ":");
-    bfs(start);
+  private void viewSuggestedRoutes(Scanner scanner) {
+    System.out.print("Enter starting point for BFS: ");
+    String startPoint = scanner.nextLine();
+    System.out.println("Performing BFS for suggested routes:");
+    graphSearch.bfs(startPoint);
   }
 
-  private void bfs(String start) {
-    Queue<String> queue = new LinkedList<>();
-    Set<String> visited = new HashSet<>();
-    queue.add(start);
-    visited.add(start);
+  private void exploreAlternativeRoutes(Scanner scanner) {
+    System.out.print("Enter starting point for DFS: ");
+    String startPoint = scanner.nextLine();
+    System.out.println("Exploring alternative routes using DFS:");
+    graphSearch.dfs(startPoint);
+  }
 
-    while (!queue.isEmpty()) {
-      String node = queue.poll();
-      System.out.println(node);
+  private void saveGraph() {
+    try (ObjectOutputStream oosNodes = new ObjectOutputStream(new FileOutputStream(NODES_FILE));
+           ObjectOutputStream oosEdges = new ObjectOutputStream(new FileOutputStream(EDGES_FILE))) {
+      oosNodes.writeObject(graphSearch.getNodes()); // Düğümleri kaydeder
+      oosEdges.writeObject(graphSearch.getEdges()); // Kenarları kaydeder
+      System.out.println("Graph data successfully saved.");
+    } catch (IOException e) {
+      System.err.println("Error saving graph data: " + e.getMessage());
+    }
+  }
 
-      for (String neighbor : graph.getOrDefault(node, new ArrayList<>())) {
-        if (!visited.contains(neighbor)) {
-          visited.add(neighbor);
-          queue.add(neighbor);
-        }
+  @SuppressWarnings("unchecked")
+  private void loadGraph() {
+    File nodesFile = new File(NODES_FILE);
+    File edgesFile = new File(EDGES_FILE);
+
+    if (nodesFile.exists() && edgesFile.exists()) {
+      try (ObjectInputStream oisNodes = new ObjectInputStream(new FileInputStream(nodesFile));
+             ObjectInputStream oisEdges = new ObjectInputStream(new FileInputStream(edgesFile))) {
+        graphSearch.setNodes((java.util.List<String>) oisNodes.readObject()); // Düğümleri yükle
+        graphSearch.setEdges((java.util.List<String[]>) oisEdges.readObject()); // Kenarları yükle
+        System.out.println("Graph data successfully loaded.");
+      } catch (IOException | ClassNotFoundException e) {
+        System.err.println("Error loading graph data: " + e.getMessage());
       }
+    } else {
+      System.out.println("No existing graph data found. Starting fresh.");
     }
   }
 }

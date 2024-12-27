@@ -1,55 +1,106 @@
 package com.ucoruh.publictransportationscheduler.datastructures;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.Queue;
 
+public class GraphSearch implements Serializable {
+  private static final long serialVersionUID = 1L;
+  private Map<String, List<String>> adjacencyList = new HashMap<>();
 
-
-public class GraphSearch {
-  private Map<String, List<String>> graph = new HashMap<>();
-
-  public void addEdge(String start, String end) {
-    graph.putIfAbsent(start, new ArrayList<>());
-    graph.putIfAbsent(end, new ArrayList<>());
-    graph.get(start).add(end);
-    graph.get(end).add(start); // İki yönlü grafik
+  // Düğüm ekleme metodu
+  public void addNode(String node) {
+    adjacencyList.putIfAbsent(node, new ArrayList<>());
   }
 
+  // Kenar ekleme metodu
+  public void addEdge(String source, String destination) {
+    adjacencyList.putIfAbsent(source, new ArrayList<>());
+    adjacencyList.putIfAbsent(destination, new ArrayList<>());
+    adjacencyList.get(source).add(destination);
+    adjacencyList.get(destination).add(source); // İki yönlü bir grafik için
+  }
+
+  // BFS algoritması (Breadth-First Search)
   public void bfs(String start) {
+    if (!adjacencyList.containsKey(start)) {
+      System.out.println("Start node not found.");
+      return;
+    }
+
     Queue<String> queue = new LinkedList<>();
     Set<String> visited = new HashSet<>();
     queue.add(start);
     visited.add(start);
 
     while (!queue.isEmpty()) {
-      String node = queue.poll();
-      System.out.print(node + " ");
+      String current = queue.poll();
+      System.out.println("Visited: " + current);
 
-      for (String neighbor : graph.getOrDefault(node, new ArrayList<>())) {
+      for (String neighbor : adjacencyList.get(current)) {
         if (!visited.contains(neighbor)) {
           visited.add(neighbor);
           queue.add(neighbor);
         }
       }
     }
-
-    System.out.println();
   }
 
+  // DFS algoritması (Depth-First Search)
   public void dfs(String start) {
+    if (!adjacencyList.containsKey(start)) {
+      System.out.println("Start node not found.");
+      return;
+    }
+
     Set<String> visited = new HashSet<>();
-    dfsHelper(start, visited);
-    System.out.println();
+    dfsRecursive(start, visited);
   }
 
-  private void dfsHelper(String node, Set<String> visited) {
-    if (visited.contains(node)) return;
-
+  private void dfsRecursive(String node, Set<String> visited) {
     visited.add(node);
-    System.out.print(node + " ");
+    System.out.println("Visited: " + node);
 
-    for (String neighbor : graph.getOrDefault(node, new ArrayList<>())) {
-      dfsHelper(neighbor, visited);
+    for (String neighbor : adjacencyList.get(node)) {
+      if (!visited.contains(neighbor)) {
+        dfsRecursive(neighbor, visited);
+      }
+    }
+  }
+
+  // Getter metodları (List döndürmek için)
+  public List<String> getNodes() {
+    return new ArrayList<>(adjacencyList.keySet()); // Anahtarları bir liste olarak döndür
+  }
+
+  // Setter metodları (List alıyoruz ve her bir öğeyi ekliyoruz)
+  public void setNodes(List<String> nodes) {
+    for (String node : nodes) {
+      addNode(node);
+    }
+  }
+
+  // Kenarları almak için
+  public List<String[]> getEdges() {
+    List<String[]> edges = new ArrayList<>();
+
+    for (Map.Entry<String, List<String>> entry : adjacencyList.entrySet()) {
+      String source = entry.getKey();
+
+      for (String destination : entry.getValue()) {
+        edges.add(new String[] {source, destination});
+      }
+    }
+
+    return edges;
+  }
+
+  // Kenarları eklemek için
+  public void setEdges(List<String[]> edges) {
+    for (String[] edge : edges) {
+      if (edge.length == 2) {
+        addEdge(edge[0], edge[1]);
+      }
     }
   }
 }

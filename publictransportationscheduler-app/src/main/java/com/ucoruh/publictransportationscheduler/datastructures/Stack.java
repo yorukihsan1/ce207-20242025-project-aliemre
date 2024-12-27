@@ -1,57 +1,40 @@
 package com.ucoruh.publictransportationscheduler.datastructures;
 
-public class Stack {
-  private int[] stack;
-  private int top;
-  private int capacity;
+import java.io.Serializable;
 
-  public Stack(int capacity) {
-    this.capacity = capacity;
-    stack = new int[capacity];
-    top = -1;
+public class Stack<T> implements Serializable {
+  private static class Node<T> {
+    T data;
+    Node<T> next;
+
+    Node(T data) {
+      this.data = data;
+    }
   }
 
-  public void push(int value) {
-    if (top == capacity - 1) {
-      System.out.println("Stack overflow. Cannot push " + value);
-      return;
-    }
+  private Node<T> top;
 
-    stack[++top] = value;
+  public void push(T item) {
+    Node<T> t = new Node<>(item);
+    t.next = top;
+    top = t;
   }
 
-  public int pop() {
-    if (top == -1) {
-      System.out.println("Stack underflow. Nothing to pop.");
-      return -1;
-    }
+  public T pop() {
+    if (top == null) throw new IllegalStateException("Stack is empty");
 
-    return stack[top--];
+    T item = top.data;
+    top = top.next;
+    return item;
   }
 
-  public int peek() {
-    if (top == -1) {
-      System.out.println("Stack is empty.");
-      return -1;
-    }
+  public T peek() {
+    if (top == null) throw new IllegalStateException("Stack is empty");
 
-    return stack[top];
+    return top.data;
   }
 
   public boolean isEmpty() {
-    return top == -1;
-  }
-
-  public void display() {
-    if (top == -1) {
-      System.out.println("Stack is empty.");
-      return;
-    }
-
-    for (int i = 0; i <= top; i++) {
-      System.out.print(stack[i] + " ");
-    }
-
-    System.out.println();
+    return top == null;
   }
 }

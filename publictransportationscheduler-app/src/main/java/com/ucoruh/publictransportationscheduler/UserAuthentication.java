@@ -1,10 +1,12 @@
 package com.ucoruh.publictransportationscheduler;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class UserAuthentication {
-  private HashMap<String, String> users = new HashMap<>();
+  private static final String USERS_FILE = "users.bin";
+  private HashMap<String, String> users = loadUsers();
   private boolean authenticated = false;
 
   public void display(Scanner scanner) {
@@ -52,11 +54,36 @@ public class UserAuthentication {
       System.out.println("Username already exists.");
     } else {
       users.put(username, password);
+      saveUsers();
       System.out.println("Registration successful!");
     }
   }
 
   public boolean isAuthenticated() {
     return authenticated;
+  }
+
+  private void saveUsers() {
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(USERS_FILE))) {
+      oos.writeObject(users);
+    } catch (IOException e) {
+      System.err.println("Error saving users: " + e.getMessage());
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private HashMap<String, String> loadUsers() {
+    File file = new File(USERS_FILE);
+
+    if (!file.exists()) {
+      return new HashMap<>();
+    }
+
+    try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+      return (HashMap<String, String>) ois.readObject();
+    } catch (IOException | ClassNotFoundException e) {
+      System.err.println("Error loading users: " + e.getMessage());
+      return new HashMap<>();
+    }
   }
 }

@@ -9,5 +9,6 @@ public class PublicTransportationSchedulerApp {
     MainMenu menu = new MainMenu();
     menu.startApplication(scanner);
     scanner.close();
+    ConsoleUtils.clearConsole();
   }
 }

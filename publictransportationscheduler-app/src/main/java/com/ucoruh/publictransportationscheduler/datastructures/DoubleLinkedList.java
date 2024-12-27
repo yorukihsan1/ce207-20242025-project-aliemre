@@ -1,23 +1,35 @@
 package com.ucoruh.publictransportationscheduler.datastructures;
 
-public class DoubleLinkedList {
-  private Node head;
-  private Node tail;
+import java.io.Serializable;
+import java.util.Iterator;
 
-  public void addFirst(int data) {
-    Node newNode = new Node(data);
+public class DoubleLinkedList<T> implements Serializable, Iterable<T> {
+  private static final long serialVersionUID = 1L; // Sabit serialVersionUID
+  private int size = 0; // Listede bulunan eleman sayısı
 
-    if (head == null) {
-      head = tail = newNode;
-    } else {
-      newNode.next = head;
-      head.prev = newNode;
-      head = newNode;
+
+  private Node<T> head;
+  private Node<T> tail;
+
+  private static class Node<T> implements Serializable {
+    private static final long serialVersionUID = 1L; // Node sınıfı için de sabit serialVersionUID
+    T value;
+    Node<T> next;
+    Node<T> prev;
+
+    Node(T value) {
+      this.value = value;
     }
   }
 
-  public void addLast(int data) {
-    Node newNode = new Node(data);
+  public DoubleLinkedList() {
+    this.head = null;
+    this.tail = null;
+  }
+
+  // Eleman ekleme
+  public void addLast(T value) {
+    Node<T> newNode = new Node<>(value);
 
     if (tail == null) {
       head = tail = newNode;
@@ -28,48 +40,82 @@ public class DoubleLinkedList {
     }
   }
 
-  public void removeFirst() {
-    if (head != null) {
-      head = head.next;
-
-      if (head != null) {
-        head.prev = null;
-      } else {
-        tail = null;
-      }
-    }
-  }
-
-  public void removeLast() {
-    if (tail != null) {
-      tail = tail.prev;
-
-      if (tail != null) {
-        tail.next = null;
-      } else {
-        head = null;
-      }
-    }
-  }
-
-  public void display() {
-    Node current = head;
+  // Eleman silme
+  public void remove(T value) {
+    Node<T> current = head;
 
     while (current != null) {
-      System.out.print(current.data + " ");
+      if (current.value.equals(value)) {
+        if (current.prev != null) {
+          current.prev.next = current.next;
+        } else {
+          head = current.next;
+        }
+
+        if (current.next != null) {
+          current.next.prev = current.prev;
+        } else {
+          tail = current.prev;
+        }
+
+        return;
+      }
+
+      current = current.next;
+    }
+  }
+
+  // Listeyi yazdırma
+  public void display() {
+    Node<T> current = head;
+
+    while (current != null) {
+      System.out.print(current.value + " ");
       current = current.next;
     }
 
     System.out.println();
   }
 
-  private static class Node {
-    int data;
-    Node next;
-    Node prev;
+  public boolean contains(T value) {
+    Node<T> current = head;
 
-    Node(int data) {
-      this.data = data;
+    while (current != null) {
+      if (current.value.equals(value)) {
+        return true;
+      }
+
+      current = current.next;
     }
+
+    return false;
+  }
+
+  public int size() {
+    return size;
+  }
+
+  // Liste boş mu?
+  public boolean isEmpty() {
+    return head == null;
+  }
+
+  // Iterable arayüzünü implement etmek için iterator() metodunu yazıyoruz
+  @Override
+  public Iterator<T> iterator() {
+    return new Iterator<T>() {
+      private Node<T> current = head;
+      @Override
+      public boolean hasNext() {
+        return current != null;
+      }
+
+      @Override
+      public T next() {
+        T value = current.value;
+        current = current.next;
+        return value;
+      }
+    };
   }
 }

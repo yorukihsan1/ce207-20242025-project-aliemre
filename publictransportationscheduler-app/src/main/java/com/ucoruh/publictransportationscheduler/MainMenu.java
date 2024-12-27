@@ -10,6 +10,7 @@ public class MainMenu {
 
     // Kullanıcı doğrulama
     do {
+      ConsoleUtils.clearConsole();
       System.out.println("=== User Authentication ===");
       auth.display(scanner);
       isAuthenticated = auth.isAuthenticated();
@@ -25,6 +26,7 @@ public class MainMenu {
     int choice;
 
     do {
+      ConsoleUtils.clearConsole();
       System.out.println("=== Main Menu ===");
       System.out.println("1. Bus and Train Schedules");
       System.out.println("2. Route Planning");
