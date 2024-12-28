@@ -4,20 +4,28 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @brief Utility class for saving and loading data to/from files.
+ */
 public class FileUtils {
 
-  // Veriyi dosyaya kaydetme
+  /**
+   * @brief Saves a list of data to a file.
+   * @param fileName The name of the file where the data will be saved.
+   * @param data The list of data to save.
+   * @param <T> The type of data being saved.
+   */
   public static <T> void saveToFile(String fileName, List<T> data) {
     try {
-      // Dosyanın kaydedileceği dizinin var olup olmadığını kontrol et ve oluştur
+      // Check if the parent directory exists and create it if necessary
       File file = new File(fileName);
       File parentDir = file.getParentFile();
 
       if (parentDir != null && !parentDir.exists()) {
-        parentDir.mkdirs(); // Eksik dizinleri oluştur
+        parentDir.mkdirs(); // Create missing directories
       }
 
-      // Veriyi dosyaya yaz
+      // Write data to the file
       try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
         oos.writeObject(data);
         System.out.println("Data successfully saved to " + fileName);
@@ -27,7 +35,12 @@ public class FileUtils {
     }
   }
 
-  // Dosyadan veriyi yükleme
+  /**
+   * @brief Loads a list of data from a file.
+   * @param fileName The name of the file from which to load the data.
+   * @param <T> The type of data to load.
+   * @return A list of data loaded from the file, or an empty list if the file does not exist or an error occurs.
+   */
   @SuppressWarnings("unchecked")
   public static <T> List<T> loadFromFile(String fileName) {
     File file = new File(fileName);

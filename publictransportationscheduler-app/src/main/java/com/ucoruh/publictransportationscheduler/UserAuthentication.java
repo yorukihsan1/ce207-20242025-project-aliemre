@@ -4,11 +4,18 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Scanner;
 
+/**
+ * @brief Handles user authentication tasks such as login, registration, and user data persistence.
+ */
 public class UserAuthentication {
-  private static final String USERS_FILE = "users.bin";
-  private HashMap<String, String> users = loadUsers();
-  private boolean authenticated = false;
+  private static final String USERS_FILE = "users.bin"; /**< File for storing user data */
+  private HashMap<String, String> users = loadUsers(); /**< Map for storing usernames and passwords */
+  private boolean authenticated = false; /**< Indicates whether the user is authenticated */
 
+  /**
+   * @brief Displays the authentication menu and processes user choices.
+   * @param scanner The scanner object for reading user input.
+   */
   public void display(Scanner scanner) {
     System.out.println("1. Login");
     System.out.println("2. Register");
@@ -30,6 +37,10 @@ public class UserAuthentication {
     }
   }
 
+  /**
+   * @brief Handles user login by validating the provided credentials.
+   * @param scanner The scanner object for reading username and password.
+   */
   public void login(Scanner scanner) {
     System.out.print("Enter username: ");
     String username = scanner.nextLine();
@@ -44,6 +55,10 @@ public class UserAuthentication {
     }
   }
 
+  /**
+   * @brief Registers a new user by storing their credentials.
+   * @param scanner The scanner object for reading username and password.
+   */
   public void register(Scanner scanner) {
     System.out.print("Enter new username: ");
     String username = scanner.nextLine();
@@ -59,18 +74,24 @@ public class UserAuthentication {
     }
   }
 
+  /**
+   * @brief Checks whether the user is authenticated.
+   * @return True if the user is authenticated, otherwise false.
+   */
   public boolean isAuthenticated() {
     return authenticated;
   }
 
+  /**
+   * @brief Saves user data to the specified file.
+   */
   private void saveUsers() {
     try {
-      File file = new File("users.bin");
-      // Klasörün var olup olmadığını kontrol et
+      File file = new File(USERS_FILE);
       File parentDir = file.getParentFile();
 
       if (parentDir != null && !parentDir.exists()) {
-        parentDir.mkdirs(); // Eksik klasörleri oluştur
+        parentDir.mkdirs(); // Create parent directories if missing
       }
 
       try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
@@ -82,7 +103,10 @@ public class UserAuthentication {
     }
   }
 
-
+  /**
+   * @brief Loads user data from the specified file.
+   * @return A HashMap containing usernames and passwords.
+   */
   @SuppressWarnings("unchecked")
   private HashMap<String, String> loadUsers() {
     File file = new File(USERS_FILE);

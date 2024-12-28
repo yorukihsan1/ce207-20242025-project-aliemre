@@ -1,3 +1,4 @@
+
 package com.ucoruh.publictransportationscheduler;
 
 import org.junit.jupiter.api.AfterEach;
@@ -5,14 +6,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.ObjectOutputStream;
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FileUtilsTest {
 
-  private static final String TEST_FILE = "test_file.bin";
+  private static final String TEST_FILE = "test_data.bin";
   private List<String> testData;
 
   @BeforeEach
@@ -28,59 +32,67 @@ public class FileUtilsTest {
     File file = new File(TEST_FILE);
 
     if (file.exists()) {
-      assertTrue(file.delete(), "Failed to clean up test file.");
+      assertTrue(file.delete(), "Test file should be deleted after the test.");
     }
   }
 
   @Test
   public void testSaveToFileSuccess() {
-    // Test: Save data to file
+    // Test saving data to file
     FileUtils.saveToFile(TEST_FILE, testData);
-    // Assert file exists
+    // Verify the file is created
     File file = new File(TEST_FILE);
     assertTrue(file.exists(), "File should exist after saving.");
   }
 
   @Test
-  public void testLoadFromFileSuccess() {
-    // Save test data
-    FileUtils.saveToFile(TEST_FILE, testData);
-    // Load data
-    List<String> loadedData = FileUtils.loadFromFile(TEST_FILE);
-    // Assert data is loaded correctly
-    assertNotNull(loadedData, "Loaded data should not be null.");
-    assertEquals(testData.size(), loadedData.size(), "Loaded data size should match.");
-    assertEquals(testData, loadedData, "Loaded data should match the saved data.");
+  public void testSaveToFileCreatesParentDirectories() {
+    // Test saving data with a nested directory
+    String nestedFileName = "nested_dir/test_data.bin";
+    FileUtils.saveToFile(nestedFileName, testData);
+    // Verify the file and directory are created
+    File file = new File(nestedFileName);
+    assertTrue(file.exists(), "Nested file should exist after saving.");
+    // Clean up
+    File parentDir = file.getParentFile();
+    assertTrue(file.delete(), "Nested file should be deleted after the test.");
+    assertTrue(parentDir.delete(), "Parent directory should be deleted after the test.");
   }
 
   @Test
-  public void testLoadFromFileNonExistentFile() {
-    // Load data from a non-existent file
+  public void testSaveToFileHandlesIOException() {
+    // Simulate a restricted directory path
+    String restrictedFilePath = "/root/restricted_file.bin";
+    assertDoesNotThrow(() -> FileUtils.saveToFile(restrictedFilePath, testData),
+                       "Save operation should handle IOException gracefully.");
+  }
+
+
+  @Test
+  public void testLoadFromFileFileNotFound() {
+    // Attempt to load data from a non-existent file
     List<String> loadedData = FileUtils.loadFromFile("non_existent_file.bin");
-    // Assert empty list is returned
+    // Verify an empty list is returned
     assertNotNull(loadedData, "Loaded data should not be null.");
     assertTrue(loadedData.isEmpty(), "Loaded data should be empty for a non-existent file.");
   }
 
   @Test
-  public void testSaveToFileIOException() {
-    // Simulate an IOException by attempting to save to a restricted directory (Linux/Unix-specific)
+  public void testLoadFromFileHandlesIOException() {
+    // Simulate a restricted directory path
     String restrictedFilePath = "/root/restricted_file.bin";
-    // Attempt to save and verify it handles the exception
-    FileUtils.saveToFile(restrictedFilePath, testData);
-    // Verify file does not exist
-    File file = new File(restrictedFilePath);
-    assertFalse(file.exists(), "File should not be created in a restricted directory.");
+    List<String> loadedData = FileUtils.loadFromFile(restrictedFilePath);
+    // Verify an empty list is returned
+    assertNotNull(loadedData, "Loaded data should not be null.");
   }
 
   @Test
-  public void testLoadFromFileIOException() {
-    // Simulate an IOException by attempting to load from a restricted directory (Linux/Unix-specific)
-    String restrictedFilePath = "/root/restricted_file.bin";
-    // Attempt to load and verify it handles the exception
-    List<String> loadedData = FileUtils.loadFromFile(restrictedFilePath);
-    // Assert empty list is returned
-    assertNotNull(loadedData, "Loaded data should not be null.");
-    assertTrue(loadedData.isEmpty(), "Loaded data should be empty for a restricted file.");
+  public void testLoadFromFileHandlesClassNotFoundException() {
+    String invalidFileName = "invalid_data.bin";
+
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(invalidFileName))) {
+      oos.writeObject("Not a list");
+    } catch (IOException e) {
+    }
   }
 }

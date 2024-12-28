@@ -3,31 +3,48 @@ package com.ucoruh.publictransportationscheduler.datastructures;
 import java.io.Serializable;
 import java.util.Iterator;
 
+/**
+ * @brief A generic implementation of a doubly linked list that supports various operations such as addition, removal, and iteration.
+ * @param <T> The type of elements stored in the list.
+ */
 public class DoubleLinkedList<T> implements Serializable, Iterable<T> {
-  private static final long serialVersionUID = 1L; // Sabit serialVersionUID
-  private int size = 0; // Listede bulunan eleman sayısı
+  private static final long serialVersionUID = 1L; /**< Unique identifier for serialization */
+  private int size = 0; /**< The number of elements in the list */
 
+  private Node<T> head; /**< The first node of the list */
+  private Node<T> tail; /**< The last node of the list */
 
-  private Node<T> head;
-  private Node<T> tail;
-
+  /**
+   * @brief Node class representing each element in the doubly linked list.
+   * @param <T> The type of value stored in the node.
+   */
   private static class Node<T> implements Serializable {
-    private static final long serialVersionUID = 1L; // Node sınıfı için de sabit serialVersionUID
-    T value;
-    Node<T> next;
-    Node<T> prev;
+    private static final long serialVersionUID = 1L; /**< Unique identifier for serialization */
+    T value; /**< The value stored in the node */
+    Node<T> next; /**< Reference to the next node */
+    Node<T> prev; /**< Reference to the previous node */
 
+    /**
+     * @brief Constructs a node with the specified value.
+     * @param value The value to be stored in the node.
+     */
     Node(T value) {
       this.value = value;
     }
   }
 
+  /**
+   * @brief Initializes an empty doubly linked list.
+   */
   public DoubleLinkedList() {
     this.head = null;
     this.tail = null;
   }
 
-  // Eleman ekleme
+  /**
+   * @brief Adds an element to the end of the list.
+   * @param value The value to be added.
+   */
   public void addLast(T value) {
     Node<T> newNode = new Node<>(value);
 
@@ -38,9 +55,14 @@ public class DoubleLinkedList<T> implements Serializable, Iterable<T> {
       newNode.prev = tail;
       tail = newNode;
     }
+
+    size++;
   }
 
-  // Eleman silme
+  /**
+   * @brief Removes the first occurrence of the specified value from the list.
+   * @param value The value to be removed.
+   */
   public void remove(T value) {
     Node<T> current = head;
 
@@ -58,6 +80,7 @@ public class DoubleLinkedList<T> implements Serializable, Iterable<T> {
           tail = current.prev;
         }
 
+        size--;
         return;
       }
 
@@ -65,7 +88,9 @@ public class DoubleLinkedList<T> implements Serializable, Iterable<T> {
     }
   }
 
-  // Listeyi yazdırma
+  /**
+   * @brief Displays all elements in the list.
+   */
   public void display() {
     Node<T> current = head;
 
@@ -77,6 +102,11 @@ public class DoubleLinkedList<T> implements Serializable, Iterable<T> {
     System.out.println();
   }
 
+  /**
+   * @brief Checks if the list contains the specified value.
+   * @param value The value to check.
+   * @return True if the value exists in the list, false otherwise.
+   */
   public boolean contains(T value) {
     Node<T> current = head;
 
@@ -91,16 +121,26 @@ public class DoubleLinkedList<T> implements Serializable, Iterable<T> {
     return false;
   }
 
+  /**
+   * @brief Returns the number of elements in the list.
+   * @return The size of the list.
+   */
   public int size() {
     return size;
   }
 
-  // Liste boş mu?
+  /**
+   * @brief Checks if the list is empty.
+   * @return True if the list is empty, false otherwise.
+   */
   public boolean isEmpty() {
     return head == null;
   }
 
-  // Iterable arayüzünü implement etmek için iterator() metodunu yazıyoruz
+  /**
+   * @brief Returns an iterator for the list.
+   * @return An iterator for the doubly linked list.
+   */
   @Override
   public Iterator<T> iterator() {
     return new Iterator<T>() {

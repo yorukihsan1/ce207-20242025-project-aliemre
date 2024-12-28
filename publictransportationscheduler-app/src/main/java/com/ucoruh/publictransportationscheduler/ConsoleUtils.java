@@ -1,6 +1,16 @@
 package com.ucoruh.publictransportationscheduler;
 
+/**
+ * @brief Utility class for console-related operations.
+ */
 public class ConsoleUtils {
+
+  /**
+   * @brief Clears the console screen based on the operating system.
+   *
+   * For Windows systems, it uses the "cls" command. For Unix-based systems,
+   * it sends the ANSI escape codes to clear the console.
+   */
   public static void clearConsole() {
     try {
       if (System.getProperty("os.name").contains("Windows")) {
@@ -10,6 +20,7 @@ public class ConsoleUtils {
         System.out.flush();
       }
     } catch (Exception e) {
+      // Exception is ignored to ensure smooth execution.
     }
   }
 }

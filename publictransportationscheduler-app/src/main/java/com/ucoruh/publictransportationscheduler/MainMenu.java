@@ -2,13 +2,22 @@ package com.ucoruh.publictransportationscheduler;
 
 import java.util.Scanner;
 
+/**
+ * @brief Main menu for the Public Transportation Scheduler application.
+ * Handles user authentication and navigation to different functionalities such as
+ * bus/train schedules, route planning, fare calculation, and alerts management.
+ */
 public class MainMenu {
 
+  /**
+   * @brief Starts the application by authenticating the user and showing the main menu.
+   * @param scanner A Scanner object to read user input.
+   */
   public void startApplication(Scanner scanner) {
     UserAuthentication auth = createUserAuthentication();
     boolean isAuthenticated = false;
 
-    // Kullanıcı doğrulama
+    // User authentication
     do {
       ConsoleUtils.clearConsole();
       System.out.println("=== User Authentication ===");
@@ -16,32 +25,56 @@ public class MainMenu {
       isAuthenticated = auth.isAuthenticated();
     } while (!isAuthenticated);
 
-    // Ana Menü
+    // Show main menu if authentication is successful
     if (isAuthenticated) {
       showMainMenu(scanner);
     }
   }
 
+  /**
+   * @brief Factory method to create a UserAuthentication instance.
+   * @return A new UserAuthentication object.
+   */
   protected UserAuthentication createUserAuthentication() {
     return new UserAuthentication();
   }
 
+  /**
+   * @brief Factory method to create a BusAndTrainSchedules instance.
+   * @return A new BusAndTrainSchedules object.
+   */
   protected BusAndTrainSchedules createBusAndTrainSchedules() {
     return new BusAndTrainSchedules();
   }
 
+  /**
+   * @brief Factory method to create a RoutePlanning instance.
+   * @return A new RoutePlanning object.
+   */
   protected RoutePlanning createRoutePlanning() {
     return new RoutePlanning();
   }
 
+  /**
+   * @brief Factory method to create a FareCalculation instance.
+   * @return A new FareCalculation object.
+   */
   protected FareCalculation createFareCalculation() {
     return new FareCalculation();
   }
 
+  /**
+   * @brief Factory method to create an Alerts instance.
+   * @return A new Alerts object.
+   */
   protected Alerts createAlerts() {
     return new Alerts();
   }
 
+  /**
+   * @brief Displays the main menu and allows the user to navigate between different functionalities.
+   * @param scanner A Scanner object to read user input.
+   */
   private void showMainMenu(Scanner scanner) {
     int choice;
 

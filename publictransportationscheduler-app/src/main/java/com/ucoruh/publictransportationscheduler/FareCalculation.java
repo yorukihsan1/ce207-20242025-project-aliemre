@@ -8,12 +8,15 @@ import java.io.*;
 import java.util.Scanner;
 
 public class FareCalculation {
-  private static final String FARES_FILE = "fares.bin"; // Ücret geçmişinin saklanacağı dosya
-  private Heap fareHeap = new Heap(); // En düşük ücreti bulmak için Heap kullanımı
-  private XORLinkedList<Double> fareHistory = new XORLinkedList<>(); // Ücret geçmişi için XOR Linked List
-  HuffmanCoding huffman = new HuffmanCoding(); // Sıkıştırma ve deşifreleme
+  private static final String FARES_FILE = "fares.bin"; /**< The file where fare history is saved. */
+  private Heap fareHeap = new Heap(); /**< Heap to manage and find the lowest fare. */
+  private XORLinkedList<Double> fareHistory = new XORLinkedList<>(); /**< XOR Linked List to store fare history. */
+  HuffmanCoding huffman = new HuffmanCoding(); /**< Huffman coding for compression and decompression. */
 
-
+  /**
+   * @brief Displays the Fare Calculation menu.
+   * @param scanner The Scanner object for user input.
+   */
   public void display(Scanner scanner) {
     int choice;
 
@@ -52,6 +55,10 @@ public class FareCalculation {
     } while (choice != 4);
   }
 
+  /**
+   * @brief Calculates the fare based on distance and ticket type.
+   * @param scanner The Scanner object for user input.
+   */
   public void calculateFare(Scanner scanner) {
     System.out.print("Enter distance (in km): ");
     double distance = scanner.nextDouble();
@@ -59,29 +66,35 @@ public class FareCalculation {
     System.out.print("Enter ticket type (1: Standard, 2: Premium): ");
     int ticketType = scanner.nextInt();
     scanner.nextLine();
-    double baseRate = 2.0; // Standard ücret birim fiyatı
+    double baseRate = 2.0;
 
     if (ticketType == 2) {
-      baseRate = 3.5; // Premium ücret birim fiyatı
+      baseRate = 3.5;
     }
 
     double fareAmount = baseRate * distance;
     System.out.println("Calculated Fare: " + fareAmount + " units");
-    fareHistory.add(fareAmount); // XOR Linked List'e ekleme
-    fareHeap.insert((int) fareAmount); // Heap'e ekleme
+    fareHistory.add(fareAmount);
+    fareHeap.insert((int) fareAmount);
     String compressedFare = huffman.compress(String.valueOf(fareAmount));
     System.out.println("Compressed Fare Data: " + compressedFare);
   }
 
+  /**
+   * @brief Displays the fare history.
+   */
   public void viewFareHistory() {
     if (fareHistory.isEmpty()) {
       System.out.println("No fare history available.");
     } else {
       System.out.println("Fare History:");
-      fareHistory.display(); // XOR Linked List'ten geçmişi gösterir
+      fareHistory.display();
     }
   }
 
+  /**
+   * @brief Displays the lowest fare.
+   */
   public void viewLowestFare() {
     if (fareHeap.isEmpty()) {
       System.out.println("No fares available.");
@@ -90,6 +103,9 @@ public class FareCalculation {
     }
   }
 
+  /**
+   * @brief Saves the fare history to a file.
+   */
   public void saveFares() {
     try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FARES_FILE))) {
       oos.writeObject(fareHistory);
@@ -99,6 +115,9 @@ public class FareCalculation {
     }
   }
 
+  /**
+   * @brief Loads the fare history from a file.
+   */
   public void loadFares() {
     File file = new File(FARES_FILE);
 
@@ -114,19 +133,34 @@ public class FareCalculation {
     }
   }
 
-  // Getter and Setter for testability
+  /**
+   * @brief Gets the fare heap for testing purposes.
+   * @return The Heap object containing fares.
+   */
   public Heap getFareHeap() {
     return fareHeap;
   }
 
+  /**
+   * @brief Gets the fare history for testing purposes.
+   * @return The XORLinkedList containing fare history.
+   */
   public XORLinkedList<Double> getFareHistory() {
     return fareHistory;
   }
 
+  /**
+   * @brief Gets the HuffmanCoding object.
+   * @return The HuffmanCoding object used for compression and decompression.
+   */
   public HuffmanCoding getHuffman() {
     return huffman;
   }
 
+  /**
+   * @brief Gets the file name where fares are saved.
+   * @return The name of the fares file.
+   */
   public String getFaresFile() {
     return FARES_FILE;
   }

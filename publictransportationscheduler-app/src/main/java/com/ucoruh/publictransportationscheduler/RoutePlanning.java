@@ -5,16 +5,26 @@ import com.ucoruh.publictransportationscheduler.datastructures.GraphSearch;
 import java.io.*;
 import java.util.Scanner;
 
+/**
+ * @brief Handles route planning functionalities, including adding points, exploring routes, and saving/loading graph data.
+ */
 public class RoutePlanning {
-  public static final String NODES_FILE = "route_nodes.bin";
-  public static final String EDGES_FILE = "route_edges.bin";
+  public static final String NODES_FILE = "route_nodes.bin"; /**< File for storing nodes data */
+  public static final String EDGES_FILE = "route_edges.bin"; /**< File for storing edges data */
 
   GraphSearch graphSearch = new GraphSearch();
 
+  /**
+   * @brief Initializes the RoutePlanning instance and loads the graph data from files.
+   */
   public RoutePlanning() {
     loadGraph();
   }
 
+  /**
+   * @brief Displays the route planning menu and handles user interactions.
+   * @param scanner The scanner object for reading user input.
+   */
   public void display(Scanner scanner) {
     int choice;
 
@@ -58,6 +68,11 @@ public class RoutePlanning {
     } while (choice != 5);
   }
 
+  /**
+   * @brief Adds a node to the graph.
+   * @param scanner The scanner object for reading user input.
+   * @param type The type of node to add (e.g., "Starting" or "Ending").
+   */
   public void addNode(Scanner scanner, String type) {
     System.out.print("Enter " + type + " Point: ");
     String node = scanner.nextLine();
@@ -73,6 +88,10 @@ public class RoutePlanning {
     System.out.println(type + " Point Added: " + node);
   }
 
+  /**
+   * @brief Performs a breadth-first search (BFS) from the specified starting point.
+   * @param scanner The scanner object for reading user input.
+   */
   public void viewSuggestedRoutes(Scanner scanner) {
     System.out.print("Enter starting point for BFS: ");
     String startPoint = scanner.nextLine();
@@ -80,6 +99,10 @@ public class RoutePlanning {
     graphSearch.bfs(startPoint);
   }
 
+  /**
+   * @brief Performs a depth-first search (DFS) from the specified starting point.
+   * @param scanner The scanner object for reading user input.
+   */
   public void exploreAlternativeRoutes(Scanner scanner) {
     System.out.print("Enter starting point for DFS: ");
     String startPoint = scanner.nextLine();
@@ -87,6 +110,9 @@ public class RoutePlanning {
     graphSearch.dfs(startPoint);
   }
 
+  /**
+   * @brief Saves the graph data (nodes and edges) to files.
+   */
   public void saveGraph() {
     try (ObjectOutputStream oosNodes = new ObjectOutputStream(new FileOutputStream(NODES_FILE));
            ObjectOutputStream oosEdges = new ObjectOutputStream(new FileOutputStream(EDGES_FILE))) {
@@ -98,7 +124,11 @@ public class RoutePlanning {
     }
   }
 
-  @SuppressWarnings("unchecked") void loadGraph() {
+  /**
+   * @brief Loads the graph data (nodes and edges) from files.
+   */
+  @SuppressWarnings("unchecked")
+  void loadGraph() {
     File nodesFile = new File(NODES_FILE);
     File edgesFile = new File(EDGES_FILE);
 

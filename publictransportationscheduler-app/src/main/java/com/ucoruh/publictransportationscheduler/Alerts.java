@@ -8,15 +8,22 @@ import java.io.*;
 import java.util.Scanner;
 
 public class Alerts {
-  public static final String ALERTS_FILE = "alerts.bin"; // Uyarıların saklanacağı dosya
-  public DoubleLinkedList<String> alerts = new DoubleLinkedList<>(); // Uyarılar için Double Linked List
-  public Stack<String> undoStack = new Stack<>(); // Geri alma işlemi için Stack
-  public HuffmanCoding huffman = new HuffmanCoding(); // Sıkıştırma ve deşifreleme
+  public static final String ALERTS_FILE = "alerts.bin"; // File to store alerts
+  public DoubleLinkedList<String> alerts = new DoubleLinkedList<>(); // Double Linked List for alerts
+  public Stack<String> undoStack = new Stack<>(); // Stack for undo operations
+  public HuffmanCoding huffman = new HuffmanCoding(); // Compression and decompression utility
 
+  /**
+   * @brief Constructor that initializes alerts by loading from file.
+   */
   public Alerts() {
-    loadAlerts(); // Uygulama başlatıldığında uyarıları yükler
+    loadAlerts();
   }
 
+  /**
+   * @brief Displays the main menu for alerts and processes user input.
+   * @param scanner The Scanner object to read user input.
+   */
   public void display(Scanner scanner) {
     int choice;
 
@@ -55,44 +62,52 @@ public class Alerts {
     } while (choice != 4);
   }
 
+  /**
+   * @brief Adds a new alert to the system.
+   * @param scanner The Scanner object to read the alert message from the user.
+   */
   public void addAlert(Scanner scanner) {
     System.out.print("Enter new alert message: ");
     String alertMessage = scanner.nextLine();
-    // Sıkıştırılmış uyarıyı elde et
     String compressedAlert = huffman.compress(alertMessage);
-    // Uyarıyı Double Linked List'e ekle
     alerts.addLast(compressedAlert);
-    // Geri alma işlemleri için Stack'e ekle
     undoStack.push(compressedAlert);
     System.out.println("Alert added: " + alertMessage);
     System.out.println("Compressed Alert Data: " + compressedAlert);
   }
 
+  /**
+   * @brief Displays all alerts in the system.
+   */
   public void viewAlerts() {
     if (alerts.isEmpty()) {
       System.out.println("No alerts available.");
     } else {
       System.out.println("All Alerts:");
 
-      // alerts üzerinde for-each döngüsü ile gezilecektir
       for (String alert : alerts) {
-        // Her bir uyarıyı deşifre et ve yazdır
         String decompressedAlert = huffman.decompress(alert);
         System.out.println(decompressedAlert);
       }
     }
   }
 
+  /**
+   * @brief Removes the last added alert from the system.
+   */
   public void undoLastAlert() {
     if (undoStack.isEmpty()) {
       System.out.println("No alerts to undo.");
     } else {
-      String lastAlert = undoStack.pop(); // Son eklenen uyarıyı yığından al
-      alerts.remove(lastAlert); // Çift bağlı listeden kaldır
+      String lastAlert = undoStack.pop();
+      alerts.remove(lastAlert);
       System.out.println("Last alert undone.");
     }
   }
 
+  /**
+   * @brief Saves all alerts to a file.
+   */
   public void saveAlerts() {
     try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ALERTS_FILE))) {
       oos.writeObject(alerts);
@@ -102,6 +117,9 @@ public class Alerts {
     }
   }
 
+  /**
+   * @brief Loads alerts from a file into memory.
+   */
   @SuppressWarnings("unchecked")
   public void loadAlerts() {
     File file = new File(ALERTS_FILE);
@@ -118,6 +136,10 @@ public class Alerts {
     }
   }
 
+  /**
+   * @brief Retrieves the alerts list.
+   * @return A DoubleLinkedList containing all the alerts.
+   */
   public DoubleLinkedList<String> getAlerts() {
     return alerts;
   }

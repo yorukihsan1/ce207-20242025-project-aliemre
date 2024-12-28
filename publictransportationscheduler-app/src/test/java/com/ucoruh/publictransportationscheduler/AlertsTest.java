@@ -11,17 +11,26 @@ import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @brief Unit tests for the Alerts class to ensure correct functionality.
+ */
 public class AlertsTest {
 
   private Alerts alerts;
   private Scanner mockScanner;
 
+  /**
+   * @brief Sets up the Alerts object and mock Scanner before each test.
+   */
   @BeforeEach
   public void setUp() {
     alerts = new Alerts();
     mockScanner = new Scanner(System.in);
   }
 
+  /**
+   * @brief Tests the addAlert method to ensure alerts are added correctly.
+   */
   @Test
   public void testAddAlert() {
     String testMessage = "Train delay";
@@ -29,6 +38,9 @@ public class AlertsTest {
     assertTrue(alerts.getAlerts().contains(alerts.huffman.compress(testMessage)));
   }
 
+  /**
+   * @brief Tests the viewAlerts method to ensure alerts are displayed correctly.
+   */
   @Test
   public void testViewAlerts() {
     String testMessage = "Train delayed";
@@ -47,6 +59,9 @@ public class AlertsTest {
     }
   }
 
+  /**
+   * @brief Tests the undoLastAlert method to ensure the last alert is removed correctly.
+   */
   @Test
   public void testUndoLastAlert() {
     String testMessage = "Service disruption on Line 5";
@@ -55,6 +70,9 @@ public class AlertsTest {
     assertTrue(alerts.getAlerts().isEmpty());
   }
 
+  /**
+   * @brief Tests the undoLastAlert method when there are no alerts to undo.
+   */
   @Test
   public void testUndoLastAlertEmptyStack() {
     ByteArrayOutputStream outContent = new ByteArrayOutputStream();
@@ -71,6 +89,9 @@ public class AlertsTest {
     }
   }
 
+  /**
+   * @brief Tests the saveAlerts method to ensure alerts are saved to a file.
+   */
   @Test
   public void testSaveAlerts() {
     String testMessage = "Service suspension";
@@ -80,6 +101,9 @@ public class AlertsTest {
     assertTrue(file.exists());
   }
 
+  /**
+   * @brief Tests the loadAlerts method to ensure alerts are loaded from a file.
+   */
   @Test
   public void testLoadAlerts() {
     String testMessage = "Train cancellation";
@@ -89,14 +113,19 @@ public class AlertsTest {
     assertFalse(alerts.getAlerts().isEmpty());
   }
 
+  /**
+   * @brief Tests the display menu with a valid user choice.
+   */
   @Test
   public void testDisplayMenuWithValidChoice() {
-    // Simulate valid menu navigation
     Scanner scanner = new Scanner("1\nAlert message\n4\n");
     alerts.display(scanner);
     assertFalse(alerts.getAlerts().isEmpty());
   }
 
+  /**
+   * @brief Tests the display menu with an invalid user choice.
+   */
   @Test
   public void testDisplayMenuWithInvalidChoice() {
     Scanner scanner = new Scanner("0\n4\n");

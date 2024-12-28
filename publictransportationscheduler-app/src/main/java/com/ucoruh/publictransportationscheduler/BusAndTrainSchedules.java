@@ -11,10 +11,14 @@ public class BusAndTrainSchedules {
   public static final String ROUTES_FILE = "routes.bin";
   public static final String SCHEDULES_FILE = "schedules.bin";
 
-  public BPlusTree schedules = loadSchedules(); // Zaman çizelgelerini yükler
-  public HashTable<Integer, String> routeMap = loadRoutes(); // Rota eşleştirmesi
-  public GraphSearch graphSearch = new GraphSearch(); // DFS bağlantı kontrolü için
+  public BPlusTree schedules = loadSchedules(); // Load schedules
+  public HashTable<Integer, String> routeMap = loadRoutes(); // Route mapping
+  public GraphSearch graphSearch = new GraphSearch(); // DFS for connectivity checks
 
+  /**
+   * @brief Displays the menu for managing bus and train schedules and handles user input.
+   * @param scanner The Scanner object to read user input.
+   */
   public void display(Scanner scanner) {
     int choice;
 
@@ -44,7 +48,6 @@ public class BusAndTrainSchedules {
           break;
 
         case 4:
-          // Burada scanner'ı parametre olarak almıyoruz, doğru parametreyi gönderiyoruz
           System.out.print("Enter route key: ");
           int routeKey = scanner.nextInt();
           scanner.nextLine();
@@ -65,7 +68,11 @@ public class BusAndTrainSchedules {
     } while (choice != 5);
   }
 
-  // Burada routeKey (int) ve routeDescription (String) parametrelerini alıyoruz
+  /**
+   * @brief Adds a new route to the route map and graph.
+   * @param routeKey The unique key of the route.
+   * @param routeDescription The description of the route.
+   */
   public void addRoute(int routeKey, String routeDescription) {
     if (routeMap.get(routeKey) == null) {
       routeMap.put(routeKey, routeDescription);
@@ -76,6 +83,10 @@ public class BusAndTrainSchedules {
     }
   }
 
+  /**
+   * @brief Searches for a route by its key and displays the result.
+   * @param scanner The Scanner object to read the route key.
+   */
   public void searchForRoutes(Scanner scanner) {
     System.out.print("Enter route key to search: ");
     int routeKey = scanner.nextInt();
@@ -89,16 +100,25 @@ public class BusAndTrainSchedules {
     }
   }
 
+  /**
+   * @brief Displays all departure times from the schedules.
+   */
   public void viewDepartureTimes() {
     System.out.println("All Departure Times:");
     schedules.display();
   }
 
+  /**
+   * @brief Checks graph connectivity using Depth-First Search (DFS).
+   */
   public void checkConnectivity() {
     System.out.println("Checking connectivity using DFS:");
-    graphSearch.dfs("StartPoint"); // Örnek başlangıç düğümü
+    graphSearch.dfs("StartPoint");
   }
 
+  /**
+   * @brief Saves all routes to the file.
+   */
   public void saveRoutes() {
     try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ROUTES_FILE))) {
       oos.writeObject(routeMap);
@@ -108,6 +128,10 @@ public class BusAndTrainSchedules {
     }
   }
 
+  /**
+   * @brief Loads routes from the file.
+   * @return A HashTable containing all the loaded routes.
+   */
   public HashTable<Integer, String> loadRoutes() {
     File file = new File(ROUTES_FILE);
 
@@ -123,6 +147,9 @@ public class BusAndTrainSchedules {
     }
   }
 
+  /**
+   * @brief Saves all schedules to the file.
+   */
   public void saveSchedules() {
     try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(SCHEDULES_FILE))) {
       oos.writeObject(schedules);
@@ -132,6 +159,10 @@ public class BusAndTrainSchedules {
     }
   }
 
+  /**
+   * @brief Loads schedules from the file.
+   * @return A BPlusTree containing all the loaded schedules.
+   */
   public BPlusTree loadSchedules() {
     File file = new File(SCHEDULES_FILE);
 
@@ -147,12 +178,19 @@ public class BusAndTrainSchedules {
     }
   }
 
+  /**
+   * @brief Retrieves the route map.
+   * @return The HashTable containing the route mappings.
+   */
   public HashTable<Integer, String> getRouteMap() {
     return routeMap;
   }
 
+  /**
+   * @brief Retrieves the schedules.
+   * @return The BPlusTree containing the schedules.
+   */
   public BPlusTree getSchedules() {
     return schedules;
   }
-
 }

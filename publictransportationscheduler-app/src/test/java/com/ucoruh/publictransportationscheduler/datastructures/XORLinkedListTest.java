@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Method;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -74,6 +73,7 @@ public class XORLinkedListTest {
     list.display();
     String expectedOutput = "XOR Linked List: 10 20 30 \n";
     assertEquals(expectedOutput, output.toString(), "Display output should match expected.");
+    System.setOut(System.out); // Restore original System.out
   }
 
   @Test
@@ -85,16 +85,22 @@ public class XORLinkedListTest {
   }
 
   @Test
-  public void testXORUsingReflection() throws Exception {
-    XORLinkedList.Node<Integer> node1 = new XORLinkedList.Node<>(10);
-    XORLinkedList.Node<Integer> node2 = new XORLinkedList.Node<>(20);
-
-    Method xorMethod = XORLinkedList.class.getDeclaredMethod("xor", XORLinkedList.Node.class, XORLinkedList.Node.class);
-    xorMethod.setAccessible(true);
-
-    XORLinkedList.Node<Integer> result = (XORLinkedList.Node<Integer>) xorMethod.invoke(list, node1, node2);
-
-    assertNotNull(result, "XOR result should not be null.");
+  public void testGetHead() {
+    list.add(10);
+    list.add(20);
+    list.add(30);
+    XORLinkedList.Node<Integer> head = list.getHead();
+    assertNotNull(head, "Head node should not be null.");
+    assertEquals(10, head.value, "Head node value should be 10.");
   }
 
+  @Test
+  public void testGetTail() {
+    list.add(10);
+    list.add(20);
+    list.add(30);
+    XORLinkedList.Node<Integer> tail = list.getTail();
+    assertNotNull(tail, "Tail node should not be null.");
+    assertEquals(30, tail.value, "Tail node value should be 30.");
+  }
 }
