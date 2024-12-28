@@ -30,7 +30,7 @@ public class UserAuthentication {
     }
   }
 
-  private void login(Scanner scanner) {
+  public void login(Scanner scanner) {
     System.out.print("Enter username: ");
     String username = scanner.nextLine();
     System.out.print("Enter password: ");
@@ -44,7 +44,7 @@ public class UserAuthentication {
     }
   }
 
-  private void register(Scanner scanner) {
+  public void register(Scanner scanner) {
     System.out.print("Enter new username: ");
     String username = scanner.nextLine();
     System.out.print("Enter password: ");
@@ -64,12 +64,24 @@ public class UserAuthentication {
   }
 
   private void saveUsers() {
-    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(USERS_FILE))) {
-      oos.writeObject(users);
+    try {
+      File file = new File("users.bin");
+      // Klasörün var olup olmadığını kontrol et
+      File parentDir = file.getParentFile();
+
+      if (parentDir != null && !parentDir.exists()) {
+        parentDir.mkdirs(); // Eksik klasörleri oluştur
+      }
+
+      try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+        oos.writeObject(users);
+        System.out.println("Users successfully saved.");
+      }
     } catch (IOException e) {
       System.err.println("Error saving users: " + e.getMessage());
     }
   }
+
 
   @SuppressWarnings("unchecked")
   private HashMap<String, String> loadUsers() {

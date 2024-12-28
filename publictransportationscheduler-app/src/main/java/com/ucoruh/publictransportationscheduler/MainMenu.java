@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class MainMenu {
 
   public void startApplication(Scanner scanner) {
-    UserAuthentication auth = new UserAuthentication();
+    UserAuthentication auth = createUserAuthentication();
     boolean isAuthenticated = false;
 
     // Kullanıcı doğrulama
@@ -20,6 +20,26 @@ public class MainMenu {
     if (isAuthenticated) {
       showMainMenu(scanner);
     }
+  }
+
+  protected UserAuthentication createUserAuthentication() {
+    return new UserAuthentication();
+  }
+
+  protected BusAndTrainSchedules createBusAndTrainSchedules() {
+    return new BusAndTrainSchedules();
+  }
+
+  protected RoutePlanning createRoutePlanning() {
+    return new RoutePlanning();
+  }
+
+  protected FareCalculation createFareCalculation() {
+    return new FareCalculation();
+  }
+
+  protected Alerts createAlerts() {
+    return new Alerts();
   }
 
   private void showMainMenu(Scanner scanner) {
@@ -39,23 +59,19 @@ public class MainMenu {
 
       switch (choice) {
         case 1:
-          BusAndTrainSchedules schedules = new BusAndTrainSchedules();
-          schedules.display(scanner);
+          createBusAndTrainSchedules().display(scanner);
           break;
 
         case 2:
-          RoutePlanning routePlanning = new RoutePlanning();
-          routePlanning.display(scanner);
+          createRoutePlanning().display(scanner);
           break;
 
         case 3:
-          FareCalculation fareCalculation = new FareCalculation();
-          fareCalculation.display(scanner);
+          createFareCalculation().display(scanner);
           break;
 
         case 4:
-          Alerts alerts = new Alerts();
-          alerts.display(scanner);
+          createAlerts().display(scanner);
           break;
 
         case 5:

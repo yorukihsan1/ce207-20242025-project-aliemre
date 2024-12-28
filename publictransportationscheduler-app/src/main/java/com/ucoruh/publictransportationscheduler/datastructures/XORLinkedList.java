@@ -8,15 +8,14 @@ public class XORLinkedList<T> implements Serializable {
   private Node<T> head;
   private Node<T> tail;
 
-  // Node class that stores data and XOR of the previous and next nodes
-  private static class Node<T> implements Serializable {
+  protected static class Node<T> implements Serializable {
     private static final long serialVersionUID = 1L;
     T value;
-    Node<T> both; // XOR address to the previous and next node
+    int both; // XOR address of the previous and next node
 
     Node(T value) {
       this.value = value;
-      this.both = null;
+      this.both = 0;
     }
   }
 
@@ -25,25 +24,34 @@ public class XORLinkedList<T> implements Serializable {
     this.tail = null;
   }
 
-  // XOR operation
-  private Node<T> xor(Node<T> a, Node<T> b) {
-    return a == null ? b : b == null ? a : new Node<>((T) ((Object) (System.identityHashCode(a) ^ System.identityHashCode(b))));
+  private int xor(Node<T> a, Node<T> b) {
+    int aHash = a == null ? 0 : System.identityHashCode(a);
+    int bHash = b == null ? 0 : System.identityHashCode(b);
+    return aHash ^ bHash;
   }
 
-  // Add a new node to the list
+  public Node<T> getNodeByAddress(int address) {
+    for (Node<T> node : new Node[] {head, tail}) {
+      if (node != null && System.identityHashCode(node) == address) {
+        return node;
+      }
+    }
+
+    return null;
+  }
+
   public void add(T value) {
     Node<T> newNode = new Node<>(value);
 
     if (head == null) {
       head = tail = newNode;
     } else {
-      newNode.both = xor(tail, null); // XOR the tail with null (next of the new node is null)
-      tail.both = xor(tail.both, newNode); // XOR the tail with the new node
+      newNode.both = xor(tail, null);
+      tail.both = xor(getNodeByAddress(tail.both), newNode);
       tail = newNode;
     }
   }
 
-  // Get the first element of the list
   public T getFirst() {
     if (head == null) {
       throw new NoSuchElementException("List is empty");
@@ -52,7 +60,6 @@ public class XORLinkedList<T> implements Serializable {
     return head.value;
   }
 
-  // Get the last element of the list
   public T getLast() {
     if (tail == null) {
       throw new NoSuchElementException("List is empty");
@@ -61,7 +68,6 @@ public class XORLinkedList<T> implements Serializable {
     return tail.value;
   }
 
-  // Display the list
   public void display() {
     Node<T> current = head;
     Node<T> prev = null;
@@ -69,7 +75,7 @@ public class XORLinkedList<T> implements Serializable {
 
     while (current != null) {
       System.out.print(current.value + " ");
-      Node<T> next = xor(prev, current.both); // Calculate the next node by XORing the previous node and current node's both pointer
+      Node<T> next = getNodeByAddress(xor(prev, current));
       prev = current;
       current = next;
     }
@@ -77,12 +83,10 @@ public class XORLinkedList<T> implements Serializable {
     System.out.println();
   }
 
-  // Check if the list is empty
   public boolean isEmpty() {
     return head == null;
   }
 
-  // Get the size of the list
   public int size() {
     int count = 0;
     Node<T> current = head;
@@ -90,11 +94,20 @@ public class XORLinkedList<T> implements Serializable {
 
     while (current != null) {
       count++;
-      Node<T> next = xor(prev, current.both);
+      Node<T> next = getNodeByAddress(xor(prev, current));
       prev = current;
       current = next;
     }
 
     return count;
   }
+
+  protected Node<T> getHead() {
+    return head;
+  }
+
+  protected Node<T> getTail() {
+    return tail;
+  }
+
 }

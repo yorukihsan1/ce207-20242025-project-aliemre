@@ -57,7 +57,7 @@ public class GraphSearch implements Serializable {
     dfsRecursive(start, visited);
   }
 
-  private void dfsRecursive(String node, Set<String> visited) {
+  public void dfsRecursive(String node, Set<String> visited) {
     visited.add(node);
     System.out.println("Visited: " + node);
 

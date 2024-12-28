@@ -1,9 +1,12 @@
 package com.ucoruh.publictransportationscheduler;
 
+import com.ucoruh.publictransportationscheduler.datastructures.DoubleLinkedList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintStream;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,65 +14,103 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AlertsTest {
 
   private Alerts alerts;
-  private Scanner scanner;
+  private Scanner mockScanner;
 
   @BeforeEach
   public void setUp() {
-    // Her testten önce çalışacak setup işlemi
     alerts = new Alerts();
-    scanner = new Scanner(System.in);
+    mockScanner = new Scanner(System.in);
   }
 
   @Test
   public void testAddAlert() {
-    // Test: Yeni bir uyarı ekleme
     String testMessage = "Train delay";
     alerts.addAlert(new Scanner(testMessage));
-    // Uyarının alerts listesine eklenmiş olduğunu kontrol et
-    assertTrue(alerts.getAlerts().contains(testMessage)); // contains kullanıldı
+    assertTrue(alerts.getAlerts().contains(alerts.huffman.compress(testMessage)));
   }
 
   @Test
   public void testViewAlerts() {
-    // Test: Uyarıları görüntüleme
-    alerts.addAlert(new Scanner("Train delayed"));
-    // Uyarıların listede bulunduğunu kontrol et
-    assertNotNull(alerts.getAlerts());
-    assertTrue(alerts.getAlerts().size() > 0);  // size() metodunu kullanıyoruz
+    String testMessage = "Train delayed";
+    alerts.addAlert(new Scanner(testMessage));
+    ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    PrintStream originalOut = System.out;
+    System.setOut(new PrintStream(outContent));
+
+    try {
+      alerts.viewAlerts();
+      assertTrue(outContent.toString().contains(testMessage));
+    }
+
+    finally {
+      System.setOut(originalOut);
+    }
   }
 
   @Test
   public void testUndoLastAlert() {
-    // Test: Son eklenen uyarıyı geri alma
     String testMessage = "Service disruption on Line 5";
     alerts.addAlert(new Scanner(testMessage));
-    // Undo işlemi yapalım
     alerts.undoLastAlert();
-    // Son eklenen uyarı listeden kaldırılmış olmalı
     assertTrue(alerts.getAlerts().isEmpty());
   }
 
   @Test
+  public void testUndoLastAlertEmptyStack() {
+    ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    PrintStream originalOut = System.out;
+    System.setOut(new PrintStream(outContent));
+
+    try {
+      alerts.undoLastAlert();
+      assertTrue(outContent.toString().contains("No alerts to undo."));
+    }
+
+    finally {
+      System.setOut(originalOut);
+    }
+  }
+
+  @Test
   public void testSaveAlerts() {
-    // Test: Uyarıları kaydetme
     String testMessage = "Service suspension";
     alerts.addAlert(new Scanner(testMessage));
-    // Uyarıları kaydetme işlemi yapılmalı
     alerts.saveAlerts();
-    // Dosyanın kaydedildiğini kontrol et
-    File file = new File("src/test/resources/alerts.bin");
+    File file = new File(Alerts.ALERTS_FILE);
     assertTrue(file.exists());
   }
 
   @Test
   public void testLoadAlerts() {
-    // Test: Uyarıları yükleme
-    alerts.addAlert(new Scanner("Train cancellation"));
-    // Uyarıları kaydedelim
+    String testMessage = "Train cancellation";
+    alerts.addAlert(new Scanner(testMessage));
     alerts.saveAlerts();
-    // Uyarıları yükleyelim
     alerts.loadAlerts();
-    // Yüklenen uyarıların listede bulunduğunu kontrol edelim
     assertFalse(alerts.getAlerts().isEmpty());
+  }
+
+  @Test
+  public void testDisplayMenuWithValidChoice() {
+    // Simulate valid menu navigation
+    Scanner scanner = new Scanner("1\nAlert message\n4\n");
+    alerts.display(scanner);
+    assertFalse(alerts.getAlerts().isEmpty());
+  }
+
+  @Test
+  public void testDisplayMenuWithInvalidChoice() {
+    Scanner scanner = new Scanner("0\n4\n");
+    ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    PrintStream originalOut = System.out;
+    System.setOut(new PrintStream(outContent));
+
+    try {
+      alerts.display(scanner);
+      assertTrue(outContent.toString().contains("Invalid choice. Try again."));
+    }
+
+    finally {
+      System.setOut(originalOut);
+    }
   }
 }

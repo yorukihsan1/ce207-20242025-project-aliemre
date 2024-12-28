@@ -10,7 +10,6 @@ public class ConsoleUtils {
         System.out.flush();
       }
     } catch (Exception e) {
-      System.out.println("Failed to clear console: " + e.getMessage());
     }
   }
 }

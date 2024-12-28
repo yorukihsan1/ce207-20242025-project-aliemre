@@ -6,13 +6,13 @@ import java.io.*;
 import java.util.Scanner;
 
 public class RoutePlanning {
-  private static final String NODES_FILE = "route_nodes.bin"; // Düğümler dosyası
-  private static final String EDGES_FILE = "route_edges.bin"; // Kenarlar dosyası
+  public static final String NODES_FILE = "route_nodes.bin";
+  public static final String EDGES_FILE = "route_edges.bin";
 
-  private GraphSearch graphSearch = new GraphSearch(); // Graf bağlantıları için
+  GraphSearch graphSearch = new GraphSearch();
 
   public RoutePlanning() {
-    loadGraph(); // Başlangıçta düğümleri ve bağlantıları yükler
+    loadGraph();
   }
 
   public void display(Scanner scanner) {
@@ -58,7 +58,7 @@ public class RoutePlanning {
     } while (choice != 5);
   }
 
-  private void addNode(Scanner scanner, String type) {
+  public void addNode(Scanner scanner, String type) {
     System.out.print("Enter " + type + " Point: ");
     String node = scanner.nextLine();
     graphSearch.addNode(node);
@@ -73,41 +73,40 @@ public class RoutePlanning {
     System.out.println(type + " Point Added: " + node);
   }
 
-  private void viewSuggestedRoutes(Scanner scanner) {
+  public void viewSuggestedRoutes(Scanner scanner) {
     System.out.print("Enter starting point for BFS: ");
     String startPoint = scanner.nextLine();
     System.out.println("Performing BFS for suggested routes:");
     graphSearch.bfs(startPoint);
   }
 
-  private void exploreAlternativeRoutes(Scanner scanner) {
+  public void exploreAlternativeRoutes(Scanner scanner) {
     System.out.print("Enter starting point for DFS: ");
     String startPoint = scanner.nextLine();
     System.out.println("Exploring alternative routes using DFS:");
     graphSearch.dfs(startPoint);
   }
 
-  private void saveGraph() {
+  public void saveGraph() {
     try (ObjectOutputStream oosNodes = new ObjectOutputStream(new FileOutputStream(NODES_FILE));
            ObjectOutputStream oosEdges = new ObjectOutputStream(new FileOutputStream(EDGES_FILE))) {
-      oosNodes.writeObject(graphSearch.getNodes()); // Düğümleri kaydeder
-      oosEdges.writeObject(graphSearch.getEdges()); // Kenarları kaydeder
+      oosNodes.writeObject(graphSearch.getNodes());
+      oosEdges.writeObject(graphSearch.getEdges());
       System.out.println("Graph data successfully saved.");
     } catch (IOException e) {
       System.err.println("Error saving graph data: " + e.getMessage());
     }
   }
 
-  @SuppressWarnings("unchecked")
-  private void loadGraph() {
+  @SuppressWarnings("unchecked") void loadGraph() {
     File nodesFile = new File(NODES_FILE);
     File edgesFile = new File(EDGES_FILE);
 
     if (nodesFile.exists() && edgesFile.exists()) {
       try (ObjectInputStream oisNodes = new ObjectInputStream(new FileInputStream(nodesFile));
              ObjectInputStream oisEdges = new ObjectInputStream(new FileInputStream(edgesFile))) {
-        graphSearch.setNodes((java.util.List<String>) oisNodes.readObject()); // Düğümleri yükle
-        graphSearch.setEdges((java.util.List<String[]>) oisEdges.readObject()); // Kenarları yükle
+        graphSearch.setNodes((java.util.List<String>) oisNodes.readObject());
+        graphSearch.setEdges((java.util.List<String[]>) oisEdges.readObject());
         System.out.println("Graph data successfully loaded.");
       } catch (IOException | ClassNotFoundException e) {
         System.err.println("Error loading graph data: " + e.getMessage());

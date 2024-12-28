@@ -8,9 +8,20 @@ public class FileUtils {
 
   // Veriyi dosyaya kaydetme
   public static <T> void saveToFile(String fileName, List<T> data) {
-    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName))) {
-      oos.writeObject(data);
-      System.out.println("Data successfully saved to " + fileName);
+    try {
+      // Dosyanın kaydedileceği dizinin var olup olmadığını kontrol et ve oluştur
+      File file = new File(fileName);
+      File parentDir = file.getParentFile();
+
+      if (parentDir != null && !parentDir.exists()) {
+        parentDir.mkdirs(); // Eksik dizinleri oluştur
+      }
+
+      // Veriyi dosyaya yaz
+      try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+        oos.writeObject(data);
+        System.out.println("Data successfully saved to " + fileName);
+      }
     } catch (IOException e) {
       System.err.println("Error saving data to file: " + e.getMessage());
     }
@@ -22,6 +33,7 @@ public class FileUtils {
     File file = new File(fileName);
 
     if (!file.exists()) {
+      System.out.println("File not found: " + fileName + ". Returning empty list.");
       return new ArrayList<>();
     }
 
