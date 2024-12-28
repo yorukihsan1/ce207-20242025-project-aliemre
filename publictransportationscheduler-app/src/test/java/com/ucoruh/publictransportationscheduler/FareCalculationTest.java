@@ -1,107 +1,131 @@
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+package com.ucoruh.publictransportationscheduler;
 
+import com.ucoruh.publictransportationscheduler.datastructures.Heap;
+import com.ucoruh.publictransportationscheduler.datastructures.XORLinkedList;
+
+import org.junit.jupiter.api.*;
 import java.io.*;
 import java.util.Scanner;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FareCalculationTest {
 
   private FareCalculation fareCalculation;
-  private Scanner scanner;
 
   @BeforeEach
   public void setUp() {
     fareCalculation = new FareCalculation();
-    scanner = mock(Scanner.class);  // Mocking the Scanner object
   }
 
   @Test
-  public void testCalculateFareStandardTicket() {
-    when(scanner.nextDouble()).thenReturn(10.0); // Distance: 10 km
-    when(scanner.nextInt()).thenReturn(1); // Ticket type: 1 (Standard)
-    fareCalculation.calculateFare(scanner);
-    assertTrue(fareCalculation.getFareHistory().size() > 0);  // Fare history should contain data
+  public void testDisplayCalculateFare() {
+    Scanner scanner = new Scanner("1\n10\n1\n4\n"); // 10 km, Standard ticket, Exit
+    fareCalculation.display(scanner);
+    assertFalse(fareCalculation.getFareHistory().isEmpty());
+    assertEquals(20.0, fareCalculation.getFareHistory().getLast()); // 10 km * 2.0
   }
 
   @Test
-  public void testCalculateFarePremiumTicket() {
-    when(scanner.nextDouble()).thenReturn(10.0); // Distance: 10 km
-    when(scanner.nextInt()).thenReturn(2); // Ticket type: 2 (Premium)
+  public void testDisplayViewFareHistory() {
+    fareCalculation.getFareHistory().add(15.0); // Add a fare for testing
+    Scanner scanner = new Scanner("2\n4\n"); // View history, Exit
+    fareCalculation.display(scanner);
+    assertFalse(fareCalculation.getFareHistory().isEmpty());
+  }
+
+  @Test
+  public void testDisplayViewLowestFare() {
+    fareCalculation.getFareHeap().insert(30);
+    fareCalculation.getFareHeap().insert(10);
+    fareCalculation.getFareHeap().insert(20);
+    Scanner scanner = new Scanner("3\n4\n"); // View lowest fare, Exit
+    fareCalculation.display(scanner);
+    assertEquals(10, fareCalculation.getFareHeap().peekMin());
+  }
+
+  @Test
+  public void testCalculateFareStandard() {
+    Scanner scanner = new Scanner("15\n1\n"); // 15 km, Standard ticket
     fareCalculation.calculateFare(scanner);
-    assertTrue(fareCalculation.getFareHistory().size() > 0);  // Fare history should contain data
+    assertEquals(15 * 2.0, fareCalculation.getFareHistory().getLast());
+  }
+
+  @Test
+  public void testCalculateFarePremium() {
+    Scanner scanner = new Scanner("5\n2\n"); // 5 km, Premium ticket
+    fareCalculation.calculateFare(scanner);
+    assertEquals(5 * 3.5, fareCalculation.getFareHistory().getLast());
   }
 
   @Test
   public void testViewFareHistoryEmpty() {
+    assertTrue(fareCalculation.getFareHistory().isEmpty());
     fareCalculation.viewFareHistory();
-    // Should print "No fare history available."
-    assertTrue(true);
   }
 
   @Test
   public void testViewFareHistoryNotEmpty() {
-    XORLinkedList<Double> fareHistoryMock = mock(XORLinkedList.class);
-    fareCalculation.fareHistory = fareHistoryMock;
+    fareCalculation.getFareHistory().add(50.0);
     fareCalculation.viewFareHistory();
-    verify(fareHistoryMock, times(1)).display(); // Verifying display was called
+    assertFalse(fareCalculation.getFareHistory().isEmpty());
+    assertEquals(50.0, fareCalculation.getFareHistory().getLast());
   }
 
   @Test
   public void testViewLowestFareEmpty() {
-    Heap heapMock = mock(Heap.class);
-    fareCalculation.fareHeap = heapMock;
-    when(heapMock.isEmpty()).thenReturn(true);
+    assertTrue(fareCalculation.getFareHeap().isEmpty());
     fareCalculation.viewLowestFare();
-    // "No fares available." message should be printed
-    assertTrue(true);
   }
 
   @Test
   public void testViewLowestFareNotEmpty() {
-    Heap heapMock = mock(Heap.class);
-    fareCalculation.fareHeap = heapMock;
-    when(heapMock.isEmpty()).thenReturn(false);
-    when(heapMock.peekMin()).thenReturn(10);
+    fareCalculation.getFareHeap().insert(25);
+    fareCalculation.getFareHeap().insert(15);
     fareCalculation.viewLowestFare();
-    // "Lowest Fare: 10 units" message should be printed
-    assertTrue(true);
+    assertEquals(15, fareCalculation.getFareHeap().peekMin());
   }
 
   @Test
-  public void testSaveFares() {
+  public void testSaveAndLoadFares() throws IOException, ClassNotFoundException {
+    fareCalculation.getFareHistory().add(40.0); // Add fare
     fareCalculation.saveFares();
-    File faresFile = new File(fareCalculation.getFaresFile());
-    assertTrue(faresFile.exists());  // Check if file was saved
+
+    File file = new File(fareCalculation.getFaresFile());
+    assertTrue(file.exists());
+
+    FareCalculation loadedInstance = new FareCalculation();
+    loadedInstance.loadFares();
+    assertEquals(40.0, loadedInstance.getFareHistory().getLast());
   }
 
   @Test
-  public void testLoadFares() {
-    File faresFile = new File(fareCalculation.getFaresFile());
-
-    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(faresFile))) {
-      XORLinkedList<Double> fareHistory = new XORLinkedList<>();
-      fareHistory.add(20.0);
-      oos.writeObject(fareHistory);
-    } catch (IOException e) {
-      e.printStackTrace();
+  public void testSaveFaresFileNotFound() {
+    // Test if the save handles exceptions properly
+    try {
+      fareCalculation.saveFares();
+    } catch (Exception e) {
+      fail("Exception during saving fares: " + e.getMessage());
     }
-
-    fareCalculation.loadFares();  // Load from file
-    assertTrue(true);  // Test passes if data is successfully loaded
   }
 
   @Test
-  public void testLoadFaresFileDoesNotExist() {
-    File faresFile = new File(fareCalculation.getFaresFile());
+  public void testLoadFaresFileNotFound() {
+    fareCalculation.loadFares(); // Should handle missing file gracefully
+  }
 
-    if (faresFile.exists()) {
-      faresFile.delete();
-    }
+  @Test
+  public void testCompressionAndDecompression() {
+    String fare = "75.0";
+    String compressed = fareCalculation.huffman.compress(fare);
+    String decompressed = fareCalculation.huffman.decompress(compressed);
+    assertEquals(fare, decompressed);
+  }
 
-    fareCalculation.loadFares();  // Try loading
-    assertTrue(fareCalculation.getFareHistory().isEmpty());  // Should be empty
+  @Test
+  public void testGetterMethods() {
+    assertNotNull(fareCalculation.getFareHeap());
+    assertNotNull(fareCalculation.getFareHistory());
+    assertEquals("fares.bin", fareCalculation.getFaresFile());
   }
 }

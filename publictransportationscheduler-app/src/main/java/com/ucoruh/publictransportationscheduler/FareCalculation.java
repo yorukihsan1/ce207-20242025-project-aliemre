@@ -11,7 +11,8 @@ public class FareCalculation {
   private static final String FARES_FILE = "fares.bin"; // Ücret geçmişinin saklanacağı dosya
   private Heap fareHeap = new Heap(); // En düşük ücreti bulmak için Heap kullanımı
   private XORLinkedList<Double> fareHistory = new XORLinkedList<>(); // Ücret geçmişi için XOR Linked List
-  private HuffmanCoding huffman = new HuffmanCoding(); // Sıkıştırma ve deşifreleme
+  HuffmanCoding huffman = new HuffmanCoding(); // Sıkıştırma ve deşifreleme
+
 
   public void display(Scanner scanner) {
     int choice;
@@ -120,6 +121,10 @@ public class FareCalculation {
 
   public XORLinkedList<Double> getFareHistory() {
     return fareHistory;
+  }
+
+  public HuffmanCoding getHuffman() {
+    return huffman;
   }
 
   public String getFaresFile() {
