@@ -262,7 +262,7 @@
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<mainClass>
-										com.ucoruh.publictransportationscheduler.PublicTransportatioSchedulerApp</mainClass>
+										com.ucoruh.publictransportationscheduler.PublicTransportationSchedulerApp</mainClass>
 								</transformer>
 							</transformers>
 						</configuration>
