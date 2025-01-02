@@ -158,12 +158,11 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<includes>
-						<include>**/PublicTransportatioSchedulerAppTest.java</include>
-						<include>**/PublicTransportatioSchedulerTest.java</include>
+						<include>**/*Test.java</include>
+						<include>**/Test*.java</include>
 					</includes>
 				</configuration>
 			</plugin>
-			
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -240,7 +239,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>4.0.0-M12</version>
+				<version>3.21.0</version>
 				<configuration>
 					<port>9000</port>
 					<tempWebappDirectory>${basedir}/target/site</tempWebappDirectory>
@@ -311,7 +310,7 @@
 				https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
 				<plugin>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.7.1</version>
+					<version>3.21.0</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-project-info-reports-plugin</artifactId>

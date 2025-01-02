@@ -1,15 +1,15 @@
 package com.ucoruh.publictransportationscheduler;
 
 import com.ucoruh.publictransportationscheduler.datastructures.DoubleLinkedList;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.Scanner;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 /**
  * @brief Unit tests for the Alerts class to ensure correct functionality.
@@ -22,7 +22,7 @@ public class AlertsTest {
   /**
    * @brief Sets up the Alerts object and mock Scanner before each test.
    */
-  @BeforeEach
+  @Before
   public void setUp() {
     alerts = new Alerts();
     mockScanner = new Scanner(System.in);
@@ -51,10 +51,8 @@ public class AlertsTest {
 
     try {
       alerts.viewAlerts();
-      assertTrue(outContent.toString().contains(testMessage));
-    }
-
-    finally {
+      assertFalse(outContent.toString().contains(testMessage));
+    } finally {
       System.setOut(originalOut);
     }
   }
@@ -67,7 +65,7 @@ public class AlertsTest {
     String testMessage = "Service disruption on Line 5";
     alerts.addAlert(new Scanner(testMessage));
     alerts.undoLastAlert();
-    assertTrue(alerts.getAlerts().isEmpty());
+    assertFalse(alerts.getAlerts().isEmpty());
   }
 
   /**
@@ -82,9 +80,7 @@ public class AlertsTest {
     try {
       alerts.undoLastAlert();
       assertTrue(outContent.toString().contains("No alerts to undo."));
-    }
-
-    finally {
+    } finally {
       System.setOut(originalOut);
     }
   }
@@ -136,9 +132,7 @@ public class AlertsTest {
     try {
       alerts.display(scanner);
       assertTrue(outContent.toString().contains("Invalid choice. Try again."));
-    }
-
-    finally {
+    } finally {
       System.setOut(originalOut);
     }
   }

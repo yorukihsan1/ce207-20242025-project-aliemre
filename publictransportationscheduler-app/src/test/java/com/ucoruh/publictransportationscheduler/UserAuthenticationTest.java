@@ -1,34 +1,41 @@
 package com.ucoruh.publictransportationscheduler;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Scanner;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 public class UserAuthenticationTest {
   private UserAuthentication userAuth;
+  private String testUserFilePath = "users.bin";
 
   /**
    * @brief Setup method to initialize the UserAuthentication instance and ensure a clean test environment.
    */
-  @BeforeEach
+  @Before
   public void setUp() {
     userAuth = new UserAuthentication();
-    deleteUsersFile();
   }
 
   /**
-   * @brief Helper method to delete the users file if it exists.
+   * @brief Tear down method to clean up after each test.
    */
-  private void deleteUsersFile() {
-    File file = new File("users.bin");
+  @After
+  public void tearDown() {
+    deleteFile(testUserFilePath);
+  }
 
+  public static boolean deleteFile(String filePath) {
+    File file = new File(filePath);
     if (file.exists()) {
-      file.delete();
+      return file.delete(); // Attempt to delete and return result
+    } else {
+      return false; // File does not exist
     }
   }
 
@@ -42,7 +49,7 @@ public class UserAuthenticationTest {
     System.setIn(new ByteArrayInputStream(input.getBytes()));
     userAuth.display(new Scanner(System.in));
     File file = new File("users.bin");
-    assertTrue(file.exists(), "The users file should exist after registration.");
+    assertTrue("The users file should exist after registration.", file.exists());
   }
 
   /**
@@ -57,7 +64,7 @@ public class UserAuthenticationTest {
     String loginInput = "1\nusername\npassword\n";
     System.setIn(new ByteArrayInputStream(loginInput.getBytes()));
     userAuth.display(new Scanner(System.in));
-    assertTrue(userAuth.isAuthenticated(), "User should be authenticated after a successful login.");
+    assertTrue("User should be authenticated after a successful login.", userAuth.isAuthenticated());
   }
 
   /**
@@ -69,7 +76,7 @@ public class UserAuthenticationTest {
     String input = "1\nwronguser\nwrongpassword\n";
     System.setIn(new ByteArrayInputStream(input.getBytes()));
     userAuth.display(new Scanner(System.in));
-    assertFalse(userAuth.isAuthenticated(), "Authentication should fail for incorrect credentials.");
+    assertFalse("Authentication should fail for incorrect credentials.", userAuth.isAuthenticated());
   }
 
   /**
@@ -78,9 +85,9 @@ public class UserAuthenticationTest {
    */
   @Test
   public void testSaveUsers() {
-    userAuth.register(new Scanner("username\npassword\n"));
+    userAuth.register(new Scanner("username78\npassword\n"));
     File file = new File(System.getProperty("user.dir") + "/users.bin");
-    assertTrue(file.exists(), "Users file should be saved after registration.");
+    assertTrue("Users file should be saved after registration.", file.exists());
   }
 
   /**
@@ -96,6 +103,6 @@ public class UserAuthenticationTest {
     String loginInput = "1\nusername\npassword\n";
     System.setIn(new ByteArrayInputStream(loginInput.getBytes()));
     newUserAuth.display(new Scanner(System.in));
-    assertTrue(newUserAuth.isAuthenticated(), "The loaded user should be authenticated with correct credentials.");
+    assertTrue("The loaded user should be authenticated with correct credentials.", newUserAuth.isAuthenticated());
   }
 }
