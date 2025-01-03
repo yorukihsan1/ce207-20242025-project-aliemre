@@ -7,6 +7,14 @@ import com.ucoruh.publictransportationscheduler.datastructures.HuffmanCoding;
 import java.io.*;
 import java.util.Scanner;
 
+/**
+ * @class FareCalculation
+ * @brief Manages fare calculation, fare history, and lowest fare tracking.
+ *
+ * This class provides functionalities to calculate fares based on distance and ticket type, 
+ * store fare history in an XOR Linked List, and track the lowest fare using a Heap.
+ * Fares can also be compressed using Huffman coding for efficient storage.
+ */
 public class FareCalculation {
   private static final String FARES_FILE = "fares.bin"; /**< The file where fare history is saved. */
   private Heap fareHeap = new Heap(); /**< Heap to manage and find the lowest fare. */

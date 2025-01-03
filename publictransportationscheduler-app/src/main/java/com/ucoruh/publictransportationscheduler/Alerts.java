@@ -7,10 +7,32 @@ import com.ucoruh.publictransportationscheduler.datastructures.Stack;
 import java.io.*;
 import java.util.Scanner;
 
+/**
+ * @class Alerts
+ * @brief Handles delay and disruption alerts for the public transportation scheduler.
+ * 
+ * This class provides functionality to add, view, undo, save, and load alerts.
+ * Alerts are stored in a Double Linked List and can be compressed and decompressed using Huffman coding.
+ */
 public class Alerts {
+  /**
+   * @brief Name of the file where alerts are stored.
+   */
   public static final String ALERTS_FILE = "alerts.bin"; // File to store alerts
+
+  /**
+   * @brief Double Linked List to store alerts.
+   */
   public DoubleLinkedList<String> alerts = new DoubleLinkedList<>(); // Double Linked List for alerts
+
+  /**
+   * @brief Stack to keep track of alerts for undo operations.
+   */
   public Stack<String> undoStack = new Stack<>(); // Stack for undo operations
+
+  /**
+   * @brief Huffman coding utility for compression and decompression.
+   */
   public HuffmanCoding huffman = new HuffmanCoding(); // Compression and decompression utility
 
   /**
@@ -22,6 +44,8 @@ public class Alerts {
 
   /**
    * @brief Displays the main menu for alerts and processes user input.
+   * 
+   * This method provides options to add, view, undo, save, or exit the alerts menu.
    * @param scanner The Scanner object to read user input.
    */
   public void display(Scanner scanner) {
@@ -64,6 +88,8 @@ public class Alerts {
 
   /**
    * @brief Adds a new alert to the system.
+   * 
+   * Prompts the user to enter an alert message, compresses it, and adds it to the alerts list.
    * @param scanner The Scanner object to read the alert message from the user.
    */
   public void addAlert(Scanner scanner) {
@@ -78,6 +104,8 @@ public class Alerts {
 
   /**
    * @brief Displays all alerts in the system.
+   * 
+   * Decompresses and prints each alert stored in the alerts list.
    */
   public void viewAlerts() {
     if (alerts.isEmpty()) {
@@ -94,6 +122,8 @@ public class Alerts {
 
   /**
    * @brief Removes the last added alert from the system.
+   * 
+   * Pops the last alert from the undo stack and removes it from the alerts list.
    */
   public void undoLastAlert() {
     if (undoStack.isEmpty()) {
@@ -107,6 +137,8 @@ public class Alerts {
 
   /**
    * @brief Saves all alerts to a file.
+   * 
+   * Serializes the alerts list and writes it to the specified file.
    */
   public void saveAlerts() {
     try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ALERTS_FILE))) {
@@ -119,6 +151,8 @@ public class Alerts {
 
   /**
    * @brief Loads alerts from a file into memory.
+   * 
+   * Reads the serialized alerts list from the specified file and deserializes it.
    */
   @SuppressWarnings("unchecked")
   public void loadAlerts() {
@@ -138,6 +172,8 @@ public class Alerts {
 
   /**
    * @brief Retrieves the alerts list.
+   * 
+   * Provides access to the current alerts stored in memory.
    * @return A DoubleLinkedList containing all the alerts.
    */
   public DoubleLinkedList<String> getAlerts() {

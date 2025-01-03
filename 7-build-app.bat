@@ -59,7 +59,8 @@ echo Return to the previous directory
 cd ..
 
 echo Run Coverxygen
-call python -m coverxygen --xml-dir ./publictransportationscheduler-app/target/site/doxygen/xml --src-dir ./ --format lcov --output ./publictransportationscheduler-app/target/site/coverxygen/lcov.info --prefix %currentDir%/publictransportationscheduler-app/
+set "currentDir=%CD%"
+python -m coverxygen --xml-dir ./publictransportationscheduler-app/target/site/doxygen/xml --src-dir ./ --format lcov --output ./publictransportationscheduler-app/target/site/coverxygen/lcov.info --prefix "%currentDir%/publictransportationscheduler-app/"
 
 echo Run lcov genhtml
 call perl C:\ProgramData\chocolatey\lib\lcov\tools\bin\genhtml --legend --title "Documentation Coverage Report" ./publictransportationscheduler-app/target/site/coverxygen/lcov.info -o publictransportationscheduler-app/target/site/coverxygen
@@ -85,7 +86,7 @@ call mvn site
 cd ..
 
 echo Package Output Jar Files
-tar -czvf release\application-binary.tar.gz -C publictransportationscheduler-app\target '*.jar'
+tar -czvf release\application-binary.tar.gz -C publictransportationscheduler-app\target *.jar
 
 echo Package Jacoco Test Coverage Report (Optional)
 call tar -czvf release\test-jacoco-report.tar.gz -C publictransportationscheduler-app\target\site\jacoco .

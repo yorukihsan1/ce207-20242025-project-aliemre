@@ -4,22 +4,44 @@ import java.io.Serializable;
 import java.util.NoSuchElementException;
 
 /**
+ * @class XORLinkedList
  * @brief A memory-efficient doubly linked list implementation using XOR for node linking.
- * @param <T> The type of elements stored in the linked list.
+ *
+ * This linked list uses XOR of memory addresses to link nodes, reducing the memory usage compared to a traditional doubly linked list.
+ * @tparam <T> The type of elements stored in the linked list.
  */
 public class XORLinkedList<T> implements Serializable {
   private static final long serialVersionUID = 1L;
-  private Node<T> head; /**< The head of the XOR linked list. */
-  private Node<T> tail; /**< The tail of the XOR linked list. */
 
   /**
+   * @brief The head of the XOR linked list.
+   */
+  private Node<T> head;
+
+  /**
+   * @brief The tail of the XOR linked list.
+   */
+  private Node<T> tail;
+
+  /**
+   * @class Node
    * @brief A node class representing an element in the XOR linked list.
-   * @param <T> The type of the value stored in the node.
+   *
+   * Each node contains a value and a XOR of the memory addresses of its previous and next nodes.
+   * @tparam <T> The type of the value stored in the node.
    */
   protected static class Node<T> implements Serializable {
     private static final long serialVersionUID = 1L;
-    T value; /**< The value stored in the node. */
-    int both; /**< The XOR of the memory addresses of the previous and next nodes. */
+
+    /**
+     * @brief The value stored in the node.
+     */
+    T value;
+
+    /**
+     * @brief The XOR of the memory addresses of the previous and next nodes.
+     */
+    int both;
 
     /**
      * @brief Constructs a new node with the given value.
@@ -57,12 +79,11 @@ public class XORLinkedList<T> implements Serializable {
    * @return The node corresponding to the given address, or null if not found.
    */
   public Node<T> getNodeByAddress(int address) {
-    for (Node<T> node : new Node[] {head, tail}) {
+    for (Node<T> node : new Node[]{head, tail}) {
       if (node != null && System.identityHashCode(node) == address) {
         return node;
       }
     }
-
     return null;
   }
 
@@ -91,7 +112,6 @@ public class XORLinkedList<T> implements Serializable {
     if (head == null) {
       throw new NoSuchElementException("List is empty");
     }
-
     return head.value;
   }
 
@@ -104,7 +124,6 @@ public class XORLinkedList<T> implements Serializable {
     if (tail == null) {
       throw new NoSuchElementException("List is empty");
     }
-
     return tail.value;
   }
 
@@ -115,14 +134,12 @@ public class XORLinkedList<T> implements Serializable {
     Node<T> current = head;
     Node<T> prev = null;
     System.out.print("XOR Linked List: ");
-
     while (current != null) {
       System.out.print(current.value + " ");
       Node<T> next = getNodeByAddress(xor(prev, current));
       prev = current;
       current = next;
     }
-
     System.out.println();
   }
 
